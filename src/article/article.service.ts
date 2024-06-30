@@ -1,18 +1,70 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ArticleEntity } from './article.entity';
-import { DeleteResult, Repository } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 import { UserEntity } from '../user/user.entity';
-import { ArticleResponseInterface } from './types/article-response.interface';
+import {
+  ArticleResponseInterface,
+  ArticlesResponseInterface,
+} from './types/article-response.interface';
 import slugify from 'slugify';
+import { QueryArticlesInterface } from './types/query-articles.interface';
 
 @Injectable()
 export class ArticleService {
   constructor(
     @InjectRepository(ArticleEntity)
     private readonly articleRepository: Repository<ArticleEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
+
+  async getArticles(
+    currentUserId: number,
+    query: QueryArticlesInterface,
+  ): Promise<ArticlesResponseInterface> {
+    const queryBuilder = getRepository(ArticleEntity)
+      .createQueryBuilder('articles')
+      .leftJoinAndSelect('articles.author', 'author');
+    const articlesCount = await queryBuilder.getCount();
+    if (query.tag) {
+      queryBuilder.andWhere(':tag = ANY(articles.tagList)', {
+        tag: query.tag,
+      });
+    }
+
+    if (query.author) {
+      const author = await this.userRepository.findOne({
+        username: query.author,
+      });
+      if (author) {
+        queryBuilder.andWhere('author.id = :id', {
+          id: author.id,
+        });
+      } else {
+        return { articles: [], articlesCount: 0 };
+      }
+    }
+
+    if (query.limit) {
+      queryBuilder.limit(query.limit);
+    }
+    if (query.offset) {
+      queryBuilder.offset(query.offset);
+    }
+
+    queryBuilder.orderBy('articles.createdAt', 'DESC');
+
+    const articles = await queryBuilder.getMany();
+
+    return { articles, articlesCount };
+  }
 
   async createArticle(
     currentUser: UserEntity,
