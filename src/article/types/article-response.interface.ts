@@ -5,6 +5,8 @@ export interface ArticleResponseInterface {
 }
 
 export interface ArticlesResponseInterface {
-  articles: ArticleEntity[];
+  articles: ArticleType[];
   articlesCount: number;
 }
+
+export type ArticleType = Omit<ArticleEntity, 'updateTimestamp'>;
