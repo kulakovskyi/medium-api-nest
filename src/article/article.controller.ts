@@ -22,13 +22,13 @@ import {
 } from './types/article-response.interface';
 import { QueryArticlesInterface } from './types/query-articles.interface';
 
-@Controller('article')
+@Controller('articles')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Get()
   async getArticles(
-    @User() currentUserId: number,
+    @User('id') currentUserId: number,
     @Query() query: QueryArticlesInterface,
   ): Promise<ArticlesResponseInterface> {
     return this.articleService.getArticles(currentUserId, query);

@@ -17,10 +17,10 @@ import { UserEntity } from './user.entity';
 import { AuthGuard } from './guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-@Controller('users')
+@Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  @Post()
+  @Post('users')
   @UsePipes(new ValidationPipe())
   async createUser(
     @Body('user') createUserDto: CreateUserDto,
@@ -29,7 +29,7 @@ export class UserController {
     return this.userService.buildUserResponse(user);
   }
 
-  @Post('login')
+  @Post('users/login')
   @UsePipes(new ValidationPipe())
   async login(
     @Body('user') loginUserDto: LoginUserDto,
@@ -38,13 +38,13 @@ export class UserController {
     return this.userService.buildUserResponse(user);
   }
 
-  @Get('current')
+  @Get('user')
   @UseGuards(AuthGuard)
   async currentUser(@User() user: UserEntity): Promise<UserResponseInterface> {
     return this.userService.buildUserResponse(user);
   }
 
-  @Put('update')
+  @Put('user')
   @UsePipes(new ValidationPipe())
   @UseGuards(AuthGuard)
   async updateUser(
