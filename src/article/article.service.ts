@@ -80,6 +80,7 @@ export class ArticleService {
   }
 
   buildArticleResponse(article: ArticleEntity): ArticleResponseInterface {
+    console.log(article);
     return { article: article };
   }
 }
