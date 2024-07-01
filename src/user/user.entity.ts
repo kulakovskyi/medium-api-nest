@@ -9,25 +9,32 @@ import {
 } from 'typeorm';
 import { hash } from 'bcrypt';
 import { ArticleEntity } from '../article/article.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'users' })
 export class UserEntity {
   @PrimaryGeneratedColumn()
+  @ApiProperty()
   id: number;
 
   @Column()
+  @ApiProperty()
   email: string;
 
   @Column()
+  @ApiProperty()
   username: string;
 
   @Column({ default: '' })
+  @ApiProperty()
   bio: string;
 
   @Column({ default: '' })
+  @ApiProperty()
   image: string;
 
   @Column({ select: false })
+  @ApiProperty()
   password: string;
 
   @BeforeInsert()
@@ -36,9 +43,11 @@ export class UserEntity {
   }
 
   @OneToMany(() => ArticleEntity, (article) => article.author)
+  @ApiProperty({ type: () => [ArticleEntity] })
   articles: ArticleEntity[];
 
   @ManyToMany(() => ArticleEntity)
   @JoinTable()
+  @ApiProperty({ type: () => [ArticleEntity] })
   favorites: ArticleEntity[];
 }
