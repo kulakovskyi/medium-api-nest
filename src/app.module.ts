@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import ormconfig from './ormconfig';
 import { AuthMiddleware } from './user/middlewares/auth.middleware';
 import { ArticleModule } from './article/article.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   controllers: [AppController],
@@ -16,6 +17,7 @@ import { ArticleModule } from './article/article.module';
     TypeOrmModule.forRoot(ormconfig),
     UserModule,
     ArticleModule,
+    ProfileModule,
   ],
 })
 export class AppModule {
