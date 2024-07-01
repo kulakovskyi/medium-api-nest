@@ -44,6 +44,7 @@ export class ArticleService {
         },
         { relations: ['favorites'] },
       );
+
       if (!user) {
         return { articles: [], articlesCount: 0 };
       }
