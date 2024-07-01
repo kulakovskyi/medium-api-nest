@@ -21,12 +21,26 @@ import {
   ArticlesResponseInterface,
 } from './types/article-response.interface';
 import { QueryArticlesInterface } from './types/query-articles.interface';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Articles')
 @Controller('articles')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Get()
+  @ApiOperation({ summary: 'Get all articles' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return all articles',
+    type: ArticlesResponseInterface,
+  })
+  @ApiResponse({ status: 200, description: 'Return all articles' })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'offset', required: false, type: Number })
+  @ApiQuery({ name: 'tag', required: false, type: String })
+  @ApiQuery({ name: 'author', required: false, type: String })
+  @ApiQuery({ name: 'favorited', required: false, type: String })
   async getArticles(
     @User('id') currentUserId: number,
     @Query() query: QueryArticlesInterface,

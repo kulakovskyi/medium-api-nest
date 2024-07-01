@@ -1,4 +1,4 @@
-export interface QueryArticlesInterface {
+export class QueryArticlesInterface {
   limit?: number;
   offset?: number;
   tag?: string;

@@ -10,19 +10,18 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserResponseInterface } from './types/user-response.interface';
+import {
+  CreateUserBody,
+  LoginUserBody,
+  UpdateUserBody,
+  UserResponseInterface,
+} from './types/user-response.interface';
 import { LoginUserDto } from './dto/login-user.dto';
 import { User } from './decorators/user.decorator';
 import { UserEntity } from './user.entity';
 import { AuthGuard } from './guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  CreateUserBody,
-  LoginUserBody,
-  UpdateUserBody,
-  UserResponse,
-} from '../swagger/user-docs';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('User')
 @Controller()
@@ -30,11 +29,12 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('users')
+  @ApiOperation({ summary: 'User registration' })
   @ApiBody({ type: CreateUserBody })
   @ApiResponse({
     status: 200,
     description: 'User registration',
-    type: UserResponse,
+    type: UserResponseInterface,
   })
   @UsePipes(new ValidationPipe())
   async createUser(
@@ -45,12 +45,13 @@ export class UserController {
   }
 
   @Post('users/login')
+  @ApiOperation({ summary: 'User login' })
   @UsePipes(new ValidationPipe())
   @ApiBody({ type: LoginUserBody })
   @ApiResponse({
     status: 200,
     description: 'User login',
-    type: UserResponse,
+    type: UserResponseInterface,
   })
   async login(
     @Body('user') loginUserDto: LoginUserDto,
@@ -60,24 +61,26 @@ export class UserController {
   }
 
   @Get('user')
+  @ApiOperation({ summary: 'Current user' })
   @UseGuards(AuthGuard)
   @ApiResponse({
     status: 200,
     description: 'Get current user',
-    type: UserResponse,
+    type: UserResponseInterface,
   })
   async currentUser(@User() user: UserEntity): Promise<UserResponseInterface> {
     return this.userService.buildUserResponse(user);
   }
 
   @Put('user')
+  @ApiOperation({ summary: 'Update user bio' })
   @UsePipes(new ValidationPipe())
   @UseGuards(AuthGuard)
   @ApiBody({ type: UpdateUserBody })
   @ApiResponse({
     status: 200,
     description: 'Update user',
-    type: UserResponse,
+    type: UserResponseInterface,
   })
   async updateUser(
     @User('id') currentUserId: number,
