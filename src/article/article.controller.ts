@@ -49,6 +49,15 @@ export class ArticleController {
     return this.articleService.buildArticleResponse(article);
   }
 
+  @Get('feed')
+  @UseGuards(AuthGuard)
+  async getFeed(
+    @User('id') currentUserId: number,
+    @Query() query: QueryArticlesInterface,
+  ): Promise<ArticlesResponseInterface> {
+    return await this.articleService.getFeed(currentUserId, query);
+  }
+
   @Get(':slug')
   async getArticle(
     @Param('slug') slug: string,
